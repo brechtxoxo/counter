@@ -1,0 +1,26 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color: #111;
+  background: #fff;
+}
+
+body {
+  margin: 0;
+}
+
+main {
+  max-width: 32rem;
+  margin: 4rem auto;
+  padding: 1rem;
+}
+
+output {
+  display: block;
+  font-size: 4rem;
+  margin: 1rem 0;
+}
+
+button {
+  margin-right: 0.5rem;
+  padding: 0.6rem 1rem;
+}
