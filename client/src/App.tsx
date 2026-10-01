@@ -7,7 +7,6 @@ const apiUrl = import.meta.env.VITE_API_URL ?? "http://localhost:3001";
 export default function App() {
   const [counter, setCounter] = useState<CounterState | null>(null);
   const [connected, setConnected] = useState(socket.connected);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -63,29 +62,26 @@ export default function App() {
     };
   }, []);
 
-  function changeCounter(delta: 1 | -1) {
-    if (!socket.connected || isSubmitting) return;
+function changeCounter(delta: 1 | -1) {
+  if (!socket.connected) return;
 
-    setIsSubmitting(true);
-    setError(null);
+  setError(null);
 
-    socket.timeout(5000).emit(
-      "counter:change",
-      { delta },
-      (timeoutError: Error | null, response?: CounterChangeResponse) => {
-        setIsSubmitting(false);
-
-        if (timeoutError) {
-          setError("De server reageerde niet op tijd. Probeer opnieuw.");
-          return;
-        }
-
-        if (!response || !response.ok) {
-          setError(response?.error ?? "Counter kon niet worden aangepast.");
-        }
+  socket.timeout(5000).emit(
+    "counter:change",
+    { delta },
+    (timeoutError: Error | null, response?: CounterChangeResponse) => {
+      if (timeoutError) {
+        setError("De server reageerde niet op tijd. Controleer de teller voordat je opnieuw klikt.");
+        return;
       }
-    );
-  }
+
+      if (!response || !response.ok) {
+        setError(response?.error ?? "Counter kon niet worden aangepast.");
+      }
+    }
+  );
+}
 
   return (
     <main>
@@ -100,14 +96,14 @@ export default function App() {
         <button
           type="button"
           onClick={() => changeCounter(-1)}
-          disabled={!connected || isSubmitting}
+          disabled={!connected}
         >
           Omlaag
         </button>
         <button
           type="button"
           onClick={() => changeCounter(1)}
-          disabled={!connected || isSubmitting}
+          disabled={!connected}
         >
           Omhoog
         </button>
